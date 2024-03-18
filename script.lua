@@ -282,7 +282,7 @@ function run()
 
 
 for _,plr in (game.Players:GetChildren()) do
-    if plr.leaderstats.Money.Value > 100000 then
+    if plr:WaitForChild("leaderstats", 10).Money.Value > 100000 then
         run()
         break
     else
