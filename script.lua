@@ -1,7 +1,7 @@
 repeat wait() until game:IsLoaded()
 
 for _,plr in (game.Players:GetChildren()) do
-    if plr.leaderstats.Money > 100000 then
+    if plr.leaderstats.Money.Value > 100000 then
         run()
     else
         do_search()
