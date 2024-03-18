@@ -1,13 +1,5 @@
 repeat wait() until game:IsLoaded()
 
-for _,plr in (game.Players:GetChildren()) do
-    if plr.leaderstats.Money.Value > 100000 then
-        run()
-    else
-        do_search()
-    end
-end
-
 function do_search()
     local servers = {}
     local req = httprequest({Url = string.format("https://games.roblox.com/v1/games/%d/servers/Public?sortOrder=Desc&limit=100&excludeFullGames=true", PlaceId)})
@@ -283,3 +275,12 @@ function run()
                 end)
             end)
         end
+
+
+for _,plr in (game.Players:GetChildren()) do
+    if plr.leaderstats.Money.Value > 100000 then
+        run()
+    else
+        do_search()
+    end
+end
