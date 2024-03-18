@@ -1,5 +1,7 @@
 repeat wait() until game:IsLoaded()
 
+local PlaceId = game.PlaceId
+
 function do_search()
     local servers = {}
     local req = httprequest({Url = string.format("https://games.roblox.com/v1/games/%d/servers/Public?sortOrder=Desc&limit=100&excludeFullGames=true", PlaceId)})
