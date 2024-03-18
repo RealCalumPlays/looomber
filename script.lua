@@ -1,10 +1,12 @@
 repeat wait() until game:IsLoaded()
 
 local PlaceId = game.PlaceId
+local HttpService = game.HttpService
+local TeleportService = game.TeleportService
 
 function do_search()
     local servers = {}
-    local req = httprequest({Url = string.format("https://games.roblox.com/v1/games/%d/servers/Public?sortOrder=Desc&limit=100&excludeFullGames=true", PlaceId)})
+    local req = http.request({Url = string.format("https://games.roblox.com/v1/games/%d/servers/Public?sortOrder=Desc&limit=100&excludeFullGames=true", PlaceId)})
     local body = HttpService:JSONDecode(req.Body)
     if body and body.data then
         for i, v in next, body.data do
