@@ -259,7 +259,7 @@ function run()
                         local AxeFling = Instance.new('BodyPosition', Main)
             
                         AxeFling.MaxForce = Vector3.new(math.huge, math.huge, math.huge)
-                        AxeFling.P = 65000 * 5
+                        AxeFling.P = 65000 * 3
                         AxeFling.Position = ActualPosition
                         Main.CanCollide = false
                     
