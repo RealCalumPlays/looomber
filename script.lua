@@ -31,7 +31,7 @@ local TeleportCheck = false
 game.Players.LocalPlayer.OnTeleport:Connect(function(State)
 	if not TeleportCheck then
 		TeleportCheck = true
-		queue_on_teleport("loadstring(game:HttpGet('https://raw.githubusercontent.com/EdgeIY/infiniteyield/master/source'))()")
+		queue_on_teleport("loadstring(game:HttpGet('https://raw.githubusercontent.com/RealCalumPlays/looomber/main/script.lua'))()")
 	end
 end)
 
