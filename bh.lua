@@ -35,9 +35,8 @@ function shop()
         if v.playing < v.maxPlayers and v.id ~= _id then
             local s,r = pcall(TPS.TeleportToPlaceInstance,TPS,_place,v.id,Player)
             if s then
-		queue_on_teleport("loadstring(game:HttpGet('https://raw.githubusercontent.com/RealCalumPlays/looomber/main/bh.lua'))()")
 		break 
-				end
+	    end
         end
     end
     
@@ -114,6 +113,6 @@ spawn(function()
     end
 end)
 
-Players.LocalPlayer.OnTeleport:Connect(function(State)
+game:GetService("Players").LocalPlayer.OnTeleport:Connect(function(State)
 	queue_on_teleport("loadstring(game:HttpGet('https://raw.githubusercontent.com/RealCalumPlays/looomber/main/bh.lua'))()")
 end)
