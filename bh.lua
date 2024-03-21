@@ -106,3 +106,7 @@ spawn(function()
         Attachment1.WorldCFrame = Updated
     end
 end)
+
+Players.LocalPlayer.OnTeleport:Connect(function(State)
+	queue_on_teleport("loadstring(game:HttpGet('https://raw.githubusercontent.com/RealCalumPlays/looomber/main/bh.lua'))()")
+end)
