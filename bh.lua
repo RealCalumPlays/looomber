@@ -34,8 +34,10 @@ function shop()
     for i,v in next, Servers.data do
         if v.playing < v.maxPlayers and v.id ~= _id then
             local s,r = pcall(TPS.TeleportToPlaceInstance,TPS,_place,v.id,Player)
+            if s then
 		queue_on_teleport("loadstring(game:HttpGet('https://raw.githubusercontent.com/RealCalumPlays/looomber/main/bh.lua'))()")
-            if s then break end
+		break 
+				end
         end
     end
     
