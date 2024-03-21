@@ -116,7 +116,7 @@ local Maid, Ancestor, GUISettings, Connections = loadstring(game:HttpGetAsync('h
 }, {}
 
 local Players, TeleportService, UIS, CoreGui, StarterGui, Lighting, RunService, ReplicatedStorage, HttpService, PerformanceStats, UserInputService, Terrain = game:GetService('Players'), game:GetService('TeleportService'), game:GetService('UserInputService'), game:GetService('CoreGui'), game:GetService('StarterGui'), game:GetService('Lighting'), game:GetService('RunService'), game:GetService('ReplicatedStorage'), game:GetService('HttpService'), game:GetService('Stats').PerformanceStats, game:GetService('UserInputService'), workspace.Terrain
-
+local TweenService = game:GetService("TweenService")
 local Player = Players.LocalPlayer
 
 local Mouse = Player:GetMouse()
@@ -195,6 +195,42 @@ function Ancestor:GetAxes()
 
 end
 
+function Ancestor:HardDragger(State)
+    if State then
+        workspace.ChildAdded:Connect(function(Dragger)
+
+        if tostring(Dragger) == 'Dragger' then
+
+            local BodyGyro = Dragger:WaitForChild('BodyGyro')
+            local BodyPosition = Dragger:WaitForChild ('BodyPosition')
+            repeat Maid.Timer:Wait() until workspace:FindFirstChild('Dragger')
+
+            repeat Maid.Timer:Wait()
+
+                BodyPosition.P = 10000 * 8
+                BodyPosition.D = 1000
+                BodyPosition.maxForce = Vector3.new(1, 1, 1) * 1000000
+                BodyGyro.maxTorque = Vector3.new(1, 1, 1) * 200
+                BodyGyro.P = 1200
+                BodyGyro.D = 140
+
+            until not workspace:FindFirstChild('Dragger')
+
+            -->Revert
+            BodyPosition.P = 10000
+            BodyPosition.D = 800
+            BodyPosition.maxForce = Vector3.new(17000, 17000, 17000)
+            BodyGyro.maxTorque = Vector3.new(200, 200, 200)
+            BodyGyro.P = 1200
+            BodyGyro.D = 140
+
+        end
+    
+    end)
+    end
+
+end
+
 task.spawn(function()
     game.RunService.RenderStepped:Connect(function()
         Lighting.TimeOfDay = '12:00:00'
@@ -205,10 +241,169 @@ task.spawn(function()
     end)
 end)
 
+local BoughtAxe = false
+
+function buyBasichatchet()
+    local LastPosition = Player.Character.PrimaryPart.CFrame
+
+    local ItemInfo
+
+    local ClientItemInfo = ReplicatedStorage.ClientItemInfo
+
+    local Items = ClientItemInfo:GetChildren()
+
+    for i = 1, #Items do 
+    
+        local ItemZ = Items[i]
+        local ItemName = ItemZ:FindFirstChild('ItemName')
+
+        if ItemName and ItemName.Value == 'Basic Hatchet' then 
+            
+            ItemInfo = ItemZ
+            
+        end
+    end
+
+    local Item
+
+    for i = 1, #Stores do 
+
+        local Store = Stores[i]
+
+        if tostring(Store) == 'ShopItems' then 
+
+            local StoreItems = Store:GetChildren()
+
+            for i = 1, #StoreItems do 
+
+                local StoreItem = StoreItems[i]
+
+                local BoxItemName = StoreItem:WaitForChild('BoxItemName')
+
+                if BoxItemName and BoxItemName.Value == "BasicHatchet" then 
+
+                    Item = StoreItem
+
+                end
+
+            end
+
+        end
+
+    end
+
+    if (Player.Character.Head.CFrame.p - Item.PrimaryPart.CFrame.p).Magnitude > 10 then
+        
+        local LastBoxPos = Item.PrimaryPart.CFrame
+
+        Player.Character.HumanoidRootPart.Velocity = Vector3.new()
+        Player.Character.HumanoidRootPart.RotVelocity = Vector3.new()
+
+        Player.Character:PivotTo(CFrame.new(Item.PrimaryPart.CFrame.p + Vector3.new(0, 4, 4)))
+        
+        repeat Maid.Timer:Wait() until Item.PrimaryPart.CFrame ~= LastBoxPos
+    end
+
+    local Max = 9e9
+
+    local CashierList = {}
+
+    local Stores = workspace.Stores:GetChildren()
+
+    for i = 1, #Stores do
+
+        local Store = Stores[i]
+
+        local Cashiers = Store:GetChildren()
+
+        for i = 1, #Cashiers do
+
+            local Cashier = Cashiers[i]
+
+            if Cashier:FindFirstChild('Head') then
+
+                CashierList[#CashierList + 1] = {
+
+                    Model   = Cashier,
+                    Counter = Cashier.Parent:FindFirstChild('Counter')
+
+                }
+
+            end
+
+        end
+
+    end
+
+    for i = 1, #CashierList do 
+
+        local Cashier = CashierList[i]
+
+        if (Player.Character.Head.CFrame.p - Cashier.Model.Head.CFrame.p).Magnitude < Max then 
+
+            Max = (Player.Character.Head.CFrame.p - Cashier.Model.Head.CFrame.p).Magnitude
+            PurchaseDetails = Cashier 
+
+        end
+
+    end
+
+    local PurchaseInformation = PurchaseDetails
+
+    ClientIsDragging:FireServer(Item)
+    Maid.Timer:Wait()
+
+    Item:PivotTo(PurchaseInformation.Counter.CFrame)
+
+    local LastItemPosition = Item.PrimaryPart.CFrame
+
+    repeat Maid.Timer:Wait() until Item.PrimaryPart.CFrame ~= LastItemPosition
+
+    Player.Character.HumanoidRootPart.Velocity = Vector3.new()
+    Player.Character.HumanoidRootPart.RotVelocity = Vector3.new()
+
+    Player.Character:PivotTo(CFrame.new(Item.PrimaryPart.CFrame.p + Vector3.new(0, 4, 4)))
+
+    Maid.Timer:Wait(1.5)
+
+    PlayerChatted:InvokeServer({Character = PurchaseDetails.Model, Name = PurchaseDetails.Model, ID = 7}, 'ConfirmPurchase')
+
+    repeat Maid.Timer:Wait() until Player.leaderstats.Money.Value == 8
+
+    ClientInteracted:FireServer(Item, 'Open box')
+
+    Maid.Timer:Wait(1)
+
+    for i, v in (PlayerModels:GetChildren()) do
+        if v.Name == "Model" and v.Owner.Value == Player then
+            ClientInteracted:FireServer(v, "Pick up tool")
+
+            Maid.Timer:Wait(0.5)
+
+            Player.Character.HumanoidRootPart.Velocity = Vector3.new()
+            Player.Character.HumanoidRootPart.RotVelocity = Vector3.new()
+
+            Player.Character:PivotTo(LastPosition)
+        end
+    end
+
+    BoughtAxe = true
+end
+
 local ThrownAxeY = nil
 local AxeFlingY = nil
 
 Mouse.Button1Down:Connect(function()
+
+    if BoughtAxe == false then
+        game:GetService('StarterGui'):SetCore('SendNotification', {
+            Title = 'Axe Fling',
+            Text = 'Buying basic hatchet...',
+            Duration = 5
+        })
+        buyBasichatchet()
+        return
+    end
 
     Player.Character.Humanoid:UnequipTools()
 
@@ -230,33 +425,77 @@ Mouse.Button1Down:Connect(function()
             ThrownAxeY = ThrownAxe
 
             AxeFling.MaxForce = Vector3.new(math.huge, math.huge, math.huge)
-            AxeFling.P = 65000 * 3
+            AxeFling.P = 10
             AxeFling.Position = ActualPosition
             Main.CanCollide = false
-        
-            --repeat Maid.Timer:Wait()
-                
-                Main.RotVelocity = Vector3.new(1, 1, 1) * 3
-                ClientIsDragging:FireServer(ThrownAxe)
-            
-            --until (Main.CFrame.p - AxeFling.Position).Magnitude < 15
-            
-            Maid.Timer:Wait(5)
 
-            ClientInteracted:FireServer(ThrownAxe, 'Pick up tool')
+            local highlight = Instance.new("Highlight", Main)
 
         end
 
     end)
 end)
 
+Mouse.Button1Up:Connect(function()
+    ClientInteracted:FireServer(ThrownAxeY, 'Pick up tool')
+end)
+
+
+workspace.ChildAdded:Connect(function(Dragger)
+    if tostring(Dragger) == 'Dragger' then
+
+        local BodyGyro = Dragger:WaitForChild('BodyGyro')
+        local BodyPosition = Dragger:WaitForChild ('BodyPosition')
+        repeat Maid.Timer:Wait() until workspace:FindFirstChild('Dragger')
+
+        repeat Maid.Timer:Wait()
+
+            BodyPosition.P = 10000 * 8
+            BodyPosition.D = 1000
+            BodyPosition.maxForce = Vector3.new(1, 1, 1) * 1000000
+            BodyGyro.maxTorque = Vector3.new(1, 1, 1) * 200
+            BodyGyro.P = 1200
+            BodyGyro.D = 140
+
+        until not workspace:FindFirstChild('Dragger')
+
+        -->Revert
+        BodyPosition.P = 10000
+        BodyPosition.D = 800
+        BodyPosition.maxForce = Vector3.new(17000, 17000, 17000)
+        BodyGyro.maxTorque = Vector3.new(200, 200, 200)
+        BodyGyro.P = 1200
+        BodyGyro.D = 140
+
+    end
+end)
+
+local heldDown = false
+
 game.UserInputService.InputBegan:Connect(function(key, isSystemReserved)
     if (key.UserInputType == Enum.UserInputType.MouseButton1) and ThrownAxeY ~= nil then -- if the key/input object is the mouse button 1
-        local ActualPosition = Mouse.Hit.p
-
-        print(ActualPosition)
-
-        AxeFlingY.Position = ActualPosition
-        ThrownAxeY.Main:PivotTo(CFrame.new(ActualPosition))
+        heldDown = true
     end
+end)
+
+game.UserInputService.InputEnded:Connect(function(key, isSystemReserved)
+    if (key.UserInputType == Enum.UserInputType.MouseButton1) and ThrownAxeY ~= nil then -- if the key/input object is the mouse button 1
+        heldDown = false
+    end
+end)
+
+spawn(function()
+	while Maid.Timer:Wait() do
+		if heldDown then
+            local ActualPosition = Mouse.Hit.p
+
+            print(ActualPosition)
+            pcall(function()
+                ClientIsDragging:FireServer(ThrownAxeY)
+                ThrownAxeY.Main.CFrame = game:GetService('Players').LocalPlayer:GetMouse().Hit
+                AxeFlingY.Position = ActualPosition
+                ThrownAxeY.Main.RotVelocity = Vector3.new(1, 1, 1) * 9e9
+            end)
+        end
+	end
 end)
