@@ -113,6 +113,11 @@ spawn(function()
     end
 end)
 
+local tp = false
+
 game:GetService("Players").LocalPlayer.OnTeleport:Connect(function(State)
-	queue_on_teleport("loadstring(game:HttpGet('https://raw.githubusercontent.com/RealCalumPlays/looomber/main/bh.lua'))()")
+	if not tp then
+		tp = true
+		queue_on_teleport("loadstring(game:HttpGet('https://raw.githubusercontent.com/RealCalumPlays/looomber/main/bh.lua'))()")
+		end
 end)
