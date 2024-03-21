@@ -1,5 +1,7 @@
 repeat wait() until game:IsLoaded()
 
+wait(5)
+
 loadstring(game:HttpGet('https://raw.githubusercontent.com/Butterisgood/Butter/main/Root2.lua'))("")
 
 local UserInputService = game:GetService("UserInputService")
